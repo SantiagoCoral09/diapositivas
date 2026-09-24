@@ -366,6 +366,13 @@
         text-transform: uppercase;
       }
 
+      .img-zoom {
+        width: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.6));
+        animation: continuousZoom 1s ease-in-out infinite alternate;
+      }
+
       /* =========================================================
        DIAPOSITIVA 4: LOGOTIPO TEXTO + COMPOSICIÓN DINÁMICA DE 5 IMÁGENES
        ========================================================= */
@@ -538,6 +545,24 @@
         }
       }
 
+      .imagotipo-rotate {
+        /* Animación de rotación lenta, gira 360 grados en 2 segundos, luego regresa a su posición original y repite después de 3 segundos quedando quieta por 3 segundos */
+        animation: rotateImagotipo 5s ease-in-out infinite;
+      }
+      @keyframes rotateImagotipo {
+        0% {
+          transform: rotate(0deg);
+        }
+        40% {
+          transform: rotate(360deg);
+        }
+        60% {
+          transform: rotate(360deg);
+        }
+        100% {
+          transform: rotate(0deg);
+        }
+      }
       /* CONTROLES */
       .controls {
         display: flex;
@@ -661,20 +686,20 @@
         <!-- Grid de 4 Imágenes Animadas -->
         <div class="grid-4-dynamic">
           <div class="card-3d">
-            <img src="papa-2.jpg" alt="Papa Nativa" />
+            <img src="papa-2.jpg" alt="Papa Nativa" class="img-zoom" />
             <br />
             <span>Papa Nativa</span>
           </div>
           <div class="card-3d">
-            <img src="ulluco-2.jpg" alt="Ulluco Regional" />
+            <img src="ulluco-2.jpg" alt="Ulluco Regional" class="img-zoom" />
             <br /><span>Ulluco</span>
           </div>
           <div class="card-3d">
-            <img src="quinua-1.jpg" alt="Quinua Ancestral" />
+            <img src="quinua-1.jpg" alt="Quinua Ancestral" class="img-zoom" />
             <br /><span>Quinua</span>
           </div>
           <div class="card-3d">
-            <img src="haba-1.jpg" alt="Haba Verde" />
+            <img src="haba-1.jpg" alt="Haba Verde" class="img-zoom" />
             <br /><span>Haba</span>
           </div>
         </div>
@@ -685,6 +710,7 @@
         <div>
           <!-- Logotipo solo texto en la parte superior -->
           <div style="margin-bottom: 15px; text-align: center">
+            <!-- imagen animada se hace zoom y regresa, en ciclo infinito, la imagen no gira -->
             <img
               src="logotipo-texto.png"
               alt="Logotipo AgroConecta"
@@ -693,6 +719,7 @@
                 width: auto;
                 object-fit: contain;
                 border-radius: 15px;
+                animation: continuousZoom 2s ease-in-out infinite alternate;
               "
             />
           </div>
@@ -761,7 +788,9 @@
 
           <!-- Imagotipo Completo en la Parte Inferior -->
           <div>
+            <!-- animacion de la imagen que gira 360 grados lentamente en 2 segundos, luego regresa a su posición original y repite despues de 3 segundos -->
             <img
+              class="imagotipo-rotate"
               src="imagotipo-completo.png"
               alt="Imagotipo Completo AgroConecta"
               style="
