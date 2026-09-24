@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Presentación Animada Dinámica - AgroConecta</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;900&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --verde-agrotech: #1b5e20;
+        --verde-oscuro: #052e10;
+        --naranja-cosecha: #ef6c00;
+        --violeta-papa: #7b2cbf;
+        --amarillo-centro: #fbc02d;
+        --blanco: #ffffff;
+        --texto-oscuro: #1a202c;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background-color: #0b0f17;
+        color: var(--blanco);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      /* CONTENEDOR PRINCIPAL 16:9 CON DEGRADADO DINÁMICO */
+      .presentation-stage {
+        width: 100%;
+        max-width: 1000px;
+        aspect-ratio: 16 / 9;
+        border-radius: 24px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7),
+          0 0 40px rgba(27, 94, 32, 0.3);
+        background: radial-gradient(circle at center, #0b3c11 0%, #031708 100%);
+      }
+
+      /* BARRA DE PROGRESO */
+      .progress-bar-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background: rgba(255, 255, 255, 0.15);
+        z-index: 100;
+      }
+
+      .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(
+          90deg,
+          var(--amarillo-centro),
+          var(--naranja-cosecha),
+          #ffffff
+        );
+        box-shadow: 0 0 10px var(--amarillo-centro);
+        transition: width 0.1s linear;
+      }
+
+      /* BASE DE SLIDES */
+      .slide {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.7s ease,
+          transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+        transform: scale(0.92) translateY(20px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 35px 45px;
+        text-align: center;
+      }
+
+      .slide.active {
+        opacity: 1;
+        visibility: visible;
+        transform: scale(1) translateY(0);
+      }
+
+      /* TIPOGRAFÍAS DE IMPACTO */
+      h1,
+      h2 {
+        font-family: "Outfit", sans-serif;
+        text-transform: uppercase;
+        line-height: 1.1;
+        letter-spacing: -0.5px;
+      }
+
+      /* =========================================================
+       DIAPOSITIVA 1: MOSAICO DESTACADO Y TÍTULO ANIMADO
+       ========================================================= */
+      .slide-1 {
+        background: radial-gradient(
+          circle at 30% 30%,
+          #2e7d32 0%,
+          #093011 70%,
+          #021205 100%
+        );
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 30px;
+        text-align: left;
+        align-items: center;
+      }
+
+      /* Animación de entrada para el título */
+      .slide-1 h1 {
+        font-size: 3rem;
+        color: #ffd54f;
+        margin-bottom: 15px;
+        text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        animation: titleEntrance 0.5s cubic-bezier(0.17, 0.67, 0.83, 0.67)
+          infinite alternate;
+      }
+
+      @keyframes titleEntrance {
+        0% {
+          transform: translateY(0px) scale(1);
+          filter: drop-shadow(0 0 2px rgba(255, 213, 79, 0.2));
+        }
+        100% {
+          transform: translateY(-4px) scale(1.02);
+          filter: drop-shadow(0 0 12px rgba(255, 213, 79, 0.6));
+        }
+      }
+
+      /* Mosaico con 1 elemento grande e intercambiable */
+      .mosaico-focus {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 150px);
+        gap: 5px;
+        width: 100%;
+      }
+
+      .mosaico-item {
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        border: 2px solid rgba(255, 255, 255, 0.85);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .mosaico-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* La imagen en foco abarca más espacio */
+      .mosaico-item.featured {
+        grid-column: span 2;
+        grid-row: span 2;
+        border-color: #ffd54f;
+        box-shadow: 0 30px 30px rgba(255, 213, 79, 0.3);
+        transform: scale(1.2);
+        z-index: 2;
+      }
+
+      /* =========================================================
+       DIAPOSITIVA 2: ISOTIPO CON ZOOM + IMÁGENES FLOTANTES LATERALES
+       ========================================================= */
+      .slide-2 {
+        background: radial-gradient(
+          circle at center,
+          #7b2cbf 0%,
+          #3c096c 60%,
+          #1a0036 100%
+        );
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .slide-2-header {
+        z-index: 5;
+      }
+
+      .badge-pill {
+        display: inline-block;
+        background: linear-gradient(90deg, var(--naranja-cosecha), #ff9800);
+        color: var(--blanco);
+        padding: 6px 20px;
+        border-radius: 30px;
+        font-weight: 800;
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+        box-shadow: 0 4px 15px rgba(239, 108, 0, 0.4);
+      }
+
+      .iso-center-stage {
+        position: relative;
+        width: 100%;
+        height: 220px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 10px 0;
+      }
+
+      /* Zoom continuo al Isotipo */
+      .isotipo-zoom {
+        max-height: 200px;
+        border-radius: 100px;
+        width: auto;
+        object-fit: contain;
+        z-index: 10;
+        filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.6));
+        animation: continuousZoom 3s ease-in-out infinite alternate;
+      }
+
+      @keyframes continuousZoom {
+        0% {
+          transform: scale(0.9) rotate(-4deg);
+        }
+        100% {
+          transform: scale(1.25) rotate(2deg);
+        }
+      }
+
+      /* Cartas/Imágenes en Ángulo Flotando a los Lados */
+      .side-card {
+        position: absolute;
+        width: 300px;
+        height: 240px;
+        border-radius: 18px;
+        overflow: hidden;
+        border: 3px solid rgba(255, 213, 79, 0.8);
+        box-shadow: 0 50px 40px rgba(0, 0, 0, 0.5);
+        z-index: 2;
+        transition: transform 0.5s ease;
+      }
+
+      .side-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .side-card.left {
+        left: 20px;
+        transform: rotate(-12deg) translateY(-10px);
+        animation: floatLeft 1s ease-in-out infinite alternate;
+      }
+
+      .side-card.right {
+        right: 20px;
+        transform: rotate(12deg) translateY(-10px);
+        animation: floatRight 1s ease-in-out infinite alternate;
+      }
+
+      @keyframes floatLeft {
+        0% {
+          transform: rotate(-12deg) translateY(-10px);
+        }
+        100% {
+          transform: rotate(-6deg) translateY(10px);
+        }
+      }
+
+      @keyframes floatRight {
+        0% {
+          transform: rotate(12deg) translateY(-10px);
+        }
+        100% {
+          transform: rotate(6deg) translateY(10px);
+        }
+      }
+
+      /* =========================================================
+       DIAPOSITIVA 3: OPORTUNIDAD REAL + FÓRMULA + 4 IMÁGENES ANIMADAS
+       ========================================================= */
+      .slide-3 {
+        background: radial-gradient(
+          circle at center,
+          #ef6c00 0%,
+          #b73a00 70%,
+          #5d1b00 100%
+        );
+        display: flex;
+        flex-direction: column;
+      }
+
+      .formula-banner {
+        background: rgba(0, 0, 0, 0.35);
+        border: 2px dashed rgba(255, 255, 255, 0.4);
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: #fff8e1;
+        display: inline-block;
+        margin-top: 5px;
+        backdrop-filter: blur(8px);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+      }
+
+      .grid-4-dynamic {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+        width: 100%;
+        margin: 25px 0;
+      }
+
+      .card-3d {
+        position: relative;
+        height: 300px;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        transform-style: preserve-3d;
+        animation: cardSlideUp 0.8s ease-out forwards;
+      }
+
+      .card-3d img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+      }
+
+      .card-3d:hover img {
+        transform: scale(1.15) rotate(2deg);
+      }
+
+      .card-3d span {
+        position: absolute;
+        bottom: 0;
+        inset-x: 0;
+        background: linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.9) 0%,
+          transparent 100%
+        );
+        padding: 12px 5px 6px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: #ffd54f;
+        text-transform: uppercase;
+      }
+
+      /* =========================================================
+       DIAPOSITIVA 4: LOGOTIPO TEXTO + COMPOSICIÓN DINÁMICA DE 5 IMÁGENES
+       ========================================================= */
+      .slide-4 {
+        background: linear-gradient(
+          135deg,
+          #3a0ca3 0%,
+          #4a148c 40%,
+          #e65100 100%
+        );
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 25px;
+        text-align: left;
+        align-items: center;
+      }
+
+      .feature-card {
+        background: rgba(255, 255, 255, 0.12);
+        padding: 12px 18px;
+        border-radius: 14px;
+        margin-bottom: 10px;
+        border-left: 6px solid #ffd54f;
+        font-size: 1.05rem;
+        font-weight: 700;
+        backdrop-filter: blur(8px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Mosaico Asimétrico Desplazado para 5 Imágenes */
+      .composition-5-images {
+        position: relative;
+        width: 100%;
+        height: 290px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .comp-img {
+        border-radius: 14px;
+        overflow: hidden;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        transition: transform 0.4s ease, z-index 0.4s;
+      }
+
+      .comp-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Disposición asimétrica e inclinada */
+      .comp-img:nth-child(1) {
+        grid-column: span 2;
+        transform: rotate(-2deg);
+      }
+      .comp-img:nth-child(2) {
+        transform: rotate(3deg) translateY(-5px);
+      }
+      .comp-img:nth-child(3) {
+        transform: rotate(2deg);
+      }
+      .comp-img:nth-child(4) {
+        transform: rotate(-3deg) translateY(5px);
+      }
+      .comp-img:nth-child(5) {
+        transform: scale(1.05) rotate(1deg);
+        border-color: #ffd54f;
+      }
+
+      /* =========================================================
+       DIAPOSITIVA 5: IMAGOTIPO + 5 IMÁGENES REDONDEADAS EN COLLAGE FLOTANTE
+       ========================================================= */
+      .slide-5 {
+        background: radial-gradient(
+          circle at center,
+          #1b5e20 0%,
+          #0d3812 50%,
+          #4a148c 100%
+        );
+      }
+
+      .cta-container {
+        border: 3px solid var(--naranja-cosecha);
+        padding: 5px 20px;
+        border-radius: 30px;
+        background: rgba(5, 20, 8, 0.65);
+        backdrop-filter: blur(12px);
+        width: 100%;
+        max-width: 900px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      }
+
+      /* Contenedor Flotante de 5 Imágenes Redondeadas (Bubbles) */
+      .bubbles-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      .bubble-img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid #ffd54f;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        transition: transform 0.4s ease;
+        animation: floatBubble 3s ease-in-out infinite alternate;
+      }
+
+      .bubble-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Desfasar animaciones y tamaños para dinamismo */
+      .bubble-img:nth-child(1) {
+        animation-delay: 0s;
+        transform: scale(0.9);
+      }
+      .bubble-img:nth-child(2) {
+        animation-delay: 0.6s;
+        transform: scale(1.1);
+        border-color: var(--naranja-cosecha);
+      }
+      .bubble-img:nth-child(3) {
+        animation-delay: 1.2s;
+        transform: scale(1);
+      }
+      .bubble-img:nth-child(4) {
+        animation-delay: 1.8s;
+        transform: scale(1.1);
+        border-color: var(--naranja-cosecha);
+      }
+      .bubble-img:nth-child(5) {
+        animation-delay: 2.4s;
+        transform: scale(0.9);
+      }
+
+      @keyframes floatBubble {
+        0% {
+          transform: translateY(0px) scale(1);
+        }
+        100% {
+          transform: translateY(-12px) scale(1.08);
+        }
+      }
+
+      .wink-emoji {
+        font-size: 3.2rem;
+        margin-top: 5px;
+        display: inline-block;
+        animation: bounceWink 1.4s infinite alternate;
+      }
+
+      @keyframes bounceWink {
+        0% {
+          transform: scale(1) rotate(0deg);
+        }
+        100% {
+          transform: scale(1.2) rotate(12deg);
+        }
+      }
+
+      /* CONTROLES */
+      .controls {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+        align-items: center;
+      }
+
+      .btn-control {
+        background: var(--naranja-cosecha);
+        color: var(--blanco);
+        border: none;
+        padding: 10px 24px;
+        border-radius: 30px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: transform 0.2s, background 0.2s;
+      }
+
+      .btn-control:hover {
+        transform: translateY(-2deg);
+        background: #d86000;
+      }
+
+      .timer-display {
+        color: #8b949e;
+        font-family: monospace;
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="presentation-stage">
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+
+      <!-- DIAPOSITIVA 1 (00:00 - 00:15) - MOSAICO ROTATIVO DESTACADO -->
+      <div class="slide slide-1 active" style="padding-top: 0px">
+        <div>
+          <h1>¿Cosechas pequeñas que se pierden?</h1>
+          <p style="font-size: 1.2rem; color: #e8f5e9; line-height: 1.5">
+            Muchos agricultores pierden su producción por falta de visibilidad y
+            compradores a tiempo.
+          </p>
+        </div>
+
+        <!-- Mosaico de 4 imágenes con 1 destacada dinámicamente -->
+        <div class="mosaico-focus" id="mosaico1">
+          <div class="mosaico-item featured">
+            <img src="agricultor-campo.jpg" alt="Agricultor" />
+          </div>
+          <div class="mosaico-item"><img src="papa-1.jpg" alt="Papa" /></div>
+          <div class="mosaico-item">
+            <img src="ulluco-1.jpg" alt="Ulluco" />
+          </div>
+          <div class="mosaico-item"><img src="maiz-1.jpg" alt="Maíz" /></div>
+        </div>
+      </div>
+
+      <!-- DIAPOSITIVA 2 (00:15 - 00:35) - ISOTIPO CON ZOOM Y CARTAS LATERALES -->
+      <div class="slide slide-2">
+        <div class="slide-2-header">
+          <span class="badge-pill">AGROCONECTA</span>
+          <h2 style="font-size: 2.3rem; color: #ffd54f">
+            El Canal Directo para el Campo
+          </h2>
+        </div>
+
+        <!-- Escenario Central: Isotipo con Zoom + Imágenes Flotantes -->
+        <div class="iso-center-stage">
+          <!-- Carta Flotante Izquierda -->
+          <div class="side-card left">
+            <img src="oca-1.jpg" alt="Oca Andina" />
+          </div>
+
+          <!-- Isotipo Central haciendo zoom -->
+          <img
+            src="logo-agroconecta.png"
+            alt="Isotipo AgroConecta"
+            class="isotipo-zoom"
+          />
+
+          <!-- Carta Flotante Derecha -->
+          <div class="side-card right">
+            <img src="arracacha-1.jpg" alt="Arracacha" />
+          </div>
+        </div>
+
+        <p
+          style="
+            font-size: 1.15rem;
+            color: #e8f5e9;
+            max-width: 750px;
+            margin: 0 auto;
+            line-height: 1.4;
+            z-index: 5;
+          "
+        >
+          🌸 <strong>Flor de papa criolla:</strong> Simboliza nuestras raíces e
+          identidad.<br />
+          📡 <strong>Señal superior:</strong> Conexión directa y eficiente con
+          el mercado.
+        </p>
+      </div>
+
+      <!-- DIAPOSITIVA 3 (00:35 - 00:60) - OPORTUNIDAD REAL + FÓRMULA + 4 IMÁGENES -->
+      <div class="slide slide-3">
+        <div>
+          <h2 style="font-size: 2.3rem; color: var(--blanco)">
+            Oportunidad Real en el Campo
+          </h2>
+          <div class="formula-banner">
+            📲 Más conectividad rural + 🌽 Tu cosecha visible = 🤝 Ventas a
+            tiempo
+          </div>
+        </div>
+
+        <!-- Grid de 4 Imágenes Animadas -->
+        <div class="grid-4-dynamic">
+          <div class="card-3d">
+            <img src="papa-2.jpg" alt="Papa Nativa" />
+            <br />
+            <span>Papa Nativa</span>
+          </div>
+          <div class="card-3d">
+            <img src="ulluco-2.jpg" alt="Ulluco Regional" />
+            <br /><span>Ulluco</span>
+          </div>
+          <div class="card-3d">
+            <img src="quinua-1.jpg" alt="Quinua Ancestral" />
+            <br /><span>Quinua</span>
+          </div>
+          <div class="card-3d">
+            <img src="haba-1.jpg" alt="Haba Verde" />
+            <br /><span>Haba</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DIAPOSITIVA 4 (00:60 - 00:80) - LOGOTIPO TEXTO + COMPOSICIÓN 5 IMÁGENES -->
+      <div class="slide slide-4">
+        <div>
+          <!-- Logotipo solo texto en la parte superior -->
+          <div style="margin-bottom: 15px; text-align: center">
+            <img
+              src="logotipo-texto.png"
+              alt="Logotipo AgroConecta"
+              style="
+                max-height: 65px;
+                width: auto;
+                object-fit: contain;
+                border-radius: 15px;
+              "
+            />
+          </div>
+
+          <h2 style="font-size: 2.1rem; color: #ffd54f; margin-bottom: 10px">
+            Fácil de Usar, Rápido de Vender
+          </h2>
+          <div class="feature-card">
+            📍 Publica la ubicación exacta de tu lote
+          </div>
+          <div class="feature-card">
+            📦 Muestra qué cosecha tienes disponible
+          </div>
+          <div class="feature-card">
+            🤝 El comprador te encuentra directamente
+          </div>
+        </div>
+
+        <!-- Composición Dinámica e Inclinada de 5 Imágenes -->
+        <div class="composition-5-images">
+          <div class="comp-img">
+            <img src="maiz-2.jpg" alt="Maíz Morocho" />
+          </div>
+          <div class="comp-img"><img src="arveja-1.jpg" alt="Arveja" /></div>
+          <div class="comp-img"><img src="oca-2.jpg" alt="Oca" /></div>
+          <div class="comp-img">
+            <img src="arracacha-2.jpg" alt="Arracacha" />
+          </div>
+          <div class="comp-img">
+            <img src="agricultor-feliz.png" alt="Agricultor Feliz" />
+          </div>
+        </div>
+      </div>
+
+      <!-- DIAPOSITIVA 5 (00:80 - 00:90) - 5 BUBBLES FLOTANTES + IMAGOTIPO ABAJO -->
+      <div class="slide slide-5">
+        <div class="cta-container">
+          <!-- 5 Imágenes Redondeadas Animadas Flotando -->
+          <div class="bubbles-container">
+            <div class="bubble-img"><img src="papa-3.jpg" alt="Papa" /></div>
+            <div class="bubble-img">
+              <img src="aji-1.jpg" alt="Ulluco" />
+            </div>
+            <div class="bubble-img">
+              <img src="quinua-2.jpg" alt="Quinua" />
+            </div>
+            <div class="bubble-img"><img src="haba-2.jpg" alt="Haba" /></div>
+            <div class="bubble-img"><img src="arveja-2.jpg" alt="Maíz" /></div>
+          </div>
+
+          <h2
+            style="font-size: 2.5rem; color: var(--blanco); margin-bottom: 5px"
+          >
+            ¡Asegura la venta de tu cosecha!
+          </h2>
+          <p
+            style="
+              font-size: 1.3rem;
+              color: #ffd54f;
+              font-weight: 800;
+              margin-bottom: 15px;
+            "
+          >
+            HÁZTE VISIBLE Y VENDE A TIEMPO...
+          </p>
+
+          <!-- Imagotipo Completo en la Parte Inferior -->
+          <div>
+            <img
+              src="imagotipo-completo.png"
+              alt="Imagotipo Completo AgroConecta"
+              style="
+                max-height: 100px;
+                width: auto;
+                max-width: 90%;
+                object-fit: contain;
+                border-radius: 15px;
+              "
+            />
+          </div>
+
+          <div class="wink-emoji">😉</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTROLES -->
+    <div class="controls">
+      <button class="btn-control" onclick="prevSlide()">◀ Anterior</button>
+      <button class="btn-control" onclick="togglePlay()" id="playBtn">
+        ⏸ Pausar
+      </button>
+      <button class="btn-control" onclick="nextSlide()">Siguiente ▶</button>
+      <div class="timer-display" id="timerDisplay">00:00 / 01:30</div>
+    </div>
+
+    <script>
+      const slidesData = [
+        { id: 0, duration: 15 },
+        { id: 1, duration: 20 },
+        { id: 2, duration: 25 },
+        { id: 3, duration: 20 },
+        { id: 4, duration: 10 },
+      ];
+
+      const totalTime = 90;
+      let currentTime = 0;
+      let isPlaying = true;
+      let currentSlideIndex = 0;
+
+      const slides = document.querySelectorAll(".slide");
+      const progressBar = document.getElementById("progressBar");
+      const timerDisplay = document.getElementById("timerDisplay");
+      const playBtn = document.getElementById("playBtn");
+
+      // Lógica para rotar las imágenes del mosaico en la Diapositiva 1
+      function animateMosaico1() {
+        const mosaico = document.getElementById("mosaico1");
+        if (!mosaico) return;
+        const items = Array.from(mosaico.querySelectorAll(".mosaico-item"));
+        let currentFeatured = items.findIndex((item) =>
+          item.classList.contains("featured")
+        );
+
+        items[currentFeatured].classList.remove("featured");
+        let nextFeatured = (currentFeatured + 1) % items.length;
+        items[nextFeatured].classList.add("featured");
+      }
+
+      // Cambiar la imagen destacada del mosaico cada 3.5 segundos
+      setInterval(() => {
+        if (isPlaying && currentSlideIndex === 0) {
+          animateMosaico1();
+        }
+      }, 3500);
+
+      function updatePresentation() {
+        let accumulatedTime = 0;
+        let newSlideIndex = 0;
+
+        for (let i = 0; i < slidesData.length; i++) {
+          accumulatedTime += slidesData[i].duration;
+          if (currentTime < accumulatedTime) {
+            newSlideIndex = i;
+            break;
+          }
+        }
+
+        if (newSlideIndex !== currentSlideIndex) {
+          slides[currentSlideIndex].classList.remove("active");
+          slides[newSlideIndex].classList.add("active");
+          currentSlideIndex = newSlideIndex;
+        }
+
+        const progressPercent = (currentTime / totalTime) * 100;
+        progressBar.style.width = `${progressPercent}%`;
+
+        const mins = Math.floor(currentTime / 60)
+          .toString()
+          .padStart(2, "0");
+        const secs = Math.floor(currentTime % 60)
+          .toString()
+          .padStart(2, "0");
+        timerDisplay.textContent = `${mins}:${secs} / 01:30`;
+      }
+
+      const interval = setInterval(() => {
+        if (isPlaying) {
+          currentTime += 0.1;
+          if (currentTime >= totalTime) {
+            currentTime = 0;
+          }
+          updatePresentation();
+        }
+      }, 100);
+
+      function togglePlay() {
+        isPlaying = !isPlaying;
+        playBtn.textContent = isPlaying ? "⏸ Pausar" : "▶ Reproducir";
+      }
+
+      function nextSlide() {
+        let accumulatedTime = 0;
+        for (let i = 0; i <= currentSlideIndex; i++) {
+          accumulatedTime += slidesData[i].duration;
+        }
+        currentTime = accumulatedTime >= totalTime ? 0 : accumulatedTime;
+        updatePresentation();
+      }
+
+      function prevSlide() {
+        if (currentSlideIndex > 0) {
+          let accumulatedTime = 0;
+          for (let i = 0; i < currentSlideIndex - 1; i++) {
+            accumulatedTime += slidesData[i].duration;
+          }
+          currentTime = accumulatedTime;
+        } else {
+          currentTime = 0;
+        }
+        updatePresentation();
+      }
+    </script>
+  </body>
+</html>
